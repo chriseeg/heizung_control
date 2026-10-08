@@ -1,0 +1,10 @@
+{
+  "entity": {
+    "sensor": {
+      "plan": { "default": "mdi:calendar-clock" }
+    }
+  },
+  "services": {
+    "assign": { "service": "mdi:calendar-edit" }
+  }
+}

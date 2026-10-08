@@ -1,0 +1,21 @@
+assign:
+  fields:
+    raum:
+      required: true
+      example: wohnzimmer
+      selector:
+        text:
+          multiple: true
+    tage:
+      required: true
+      example: ["mon", "tue", "wed", "thu", "fri"]
+      selector:
+        select:
+          multiple: true
+          translation_key: tag
+          options: [mon, tue, wed, thu, fri, sat, sun, free, homeoffice]
+    profil:
+      required: true
+      example: werktag
+      selector:
+        text:

@@ -1,0 +1,94 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Heizplan",
+        "description": "Räume und Profile legst du danach im Panel „Heizpläne“ an.",
+        "data": {
+          "workday_entity": "Werktag-Sensor",
+          "homeoffice_entity": "Homeoffice-Sensor (optional)"
+        },
+        "data_description": {
+          "workday_entity": "Ist an Werktagen an (Workday-Integration). Montag bis Freitag ohne Werktag gilt als freier Tag.",
+          "homeoffice_entity": "Ist an Homeoffice-Tagen an. Dann gilt das Homeoffice-Profil des Raums, falls gesetzt."
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Heizplan ist schon eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Heizplan",
+        "data": {
+          "workday_entity": "Werktag-Sensor",
+          "homeoffice_entity": "Homeoffice-Sensor (optional)"
+        },
+        "data_description": {
+          "workday_entity": "Ist an Werktagen an (Workday-Integration). Montag bis Freitag ohne Werktag gilt als freier Tag.",
+          "homeoffice_entity": "Ist an Homeoffice-Tagen an. Dann gilt das Homeoffice-Profil des Raums, falls gesetzt."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "plan": {
+        "state_attributes": {
+          "profil": {
+            "name": "Profil"
+          },
+          "tag": {
+            "name": "Tag"
+          },
+          "seit": {
+            "name": "Seit"
+          },
+          "naechster_wechsel": {
+            "name": "Nächster Wechsel"
+          },
+          "naechste_temperatur": {
+            "name": "Nächste Temperatur"
+          }
+        }
+      }
+    }
+  },
+  "selector": {
+    "tag": {
+      "options": {
+        "mon": "Montag",
+        "tue": "Dienstag",
+        "wed": "Mittwoch",
+        "thu": "Donnerstag",
+        "fri": "Freitag",
+        "sat": "Samstag",
+        "sun": "Sonntag",
+        "free": "Freier Tag",
+        "homeoffice": "Homeoffice"
+      }
+    }
+  },
+  "services": {
+    "assign": {
+      "name": "Profil zuweisen",
+      "description": "Weist einem oder mehreren Räumen für die gewählten Tage ein Profil zu.",
+      "fields": {
+        "raum": {
+          "name": "Raum",
+          "description": "Kürzel des Raums, z. B. wohnzimmer."
+        },
+        "tage": {
+          "name": "Tage",
+          "description": "Wochentage und Sondertage."
+        },
+        "profil": {
+          "name": "Profil",
+          "description": "ID des Profils. Leer lassen, um die Zuordnung zu löschen (nur Sondertage sinnvoll)."
+        }
+      }
+    }
+  }
+}
