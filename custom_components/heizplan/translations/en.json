@@ -1,0 +1,94 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Heizplan",
+        "description": "Add rooms and profiles afterwards in the “Heizpläne” panel.",
+        "data": {
+          "workday_entity": "Workday sensor",
+          "homeoffice_entity": "Home office sensor (optional)"
+        },
+        "data_description": {
+          "workday_entity": "On on workdays (Workday integration). Monday to Friday without a workday counts as a free day.",
+          "homeoffice_entity": "On on home office days. The room's home office profile applies, if set."
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Heizplan",
+        "data": {
+          "workday_entity": "Workday sensor",
+          "homeoffice_entity": "Home office sensor (optional)"
+        },
+        "data_description": {
+          "workday_entity": "On on workdays (Workday integration). Monday to Friday without a workday counts as a free day.",
+          "homeoffice_entity": "On on home office days. The room's home office profile applies, if set."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "plan": {
+        "state_attributes": {
+          "profil": {
+            "name": "Profile"
+          },
+          "tag": {
+            "name": "Day"
+          },
+          "seit": {
+            "name": "Since"
+          },
+          "naechster_wechsel": {
+            "name": "Next change"
+          },
+          "naechste_temperatur": {
+            "name": "Next temperature"
+          }
+        }
+      }
+    }
+  },
+  "selector": {
+    "tag": {
+      "options": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday",
+        "free": "Free day",
+        "homeoffice": "Homeoffice"
+      }
+    }
+  },
+  "services": {
+    "assign": {
+      "name": "Assign profile",
+      "description": "Assigns a profile to one or more rooms for the given days.",
+      "fields": {
+        "raum": {
+          "name": "Room",
+          "description": "Room key, e.g. wohnzimmer."
+        },
+        "tage": {
+          "name": "Days",
+          "description": "Weekdays and special days."
+        },
+        "profil": {
+          "name": "Profile",
+          "description": "Profile ID. Empty clears the assignment."
+        }
+      }
+    }
+  }
+}

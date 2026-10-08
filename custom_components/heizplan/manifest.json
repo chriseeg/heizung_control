@@ -1,0 +1,14 @@
+{
+  "domain": "heizplan",
+  "name": "Heizplan",
+  "codeowners": ["@chriseeg"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "panel_custom", "websocket_api"],
+  "documentation": "https://github.com/chriseeg/heizung_control",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/chriseeg/heizung_control/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}
