@@ -90,6 +90,7 @@
   .seg-ctl{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin:4px 0 14px}
   .seg-ctl button{flex:1;height:36px;border-radius:10px;font-weight:600;font-size:15px;color:var(--mute)}
   .seg-ctl button.on{background:var(--card);color:var(--primary-text-color);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .all{display:inline-flex;align-items:center;gap:2px;margin:0 0 12px;padding:0 12px 0 6px;height:32px;border-radius:999px;background:var(--bg2);color:var(--acc);font-weight:600;font-size:14px;--mdc-icon-size:18px}
   .today{display:flex;align-items:center;gap:8px;color:var(--mute);font-size:14px;margin:0 4px 12px;--mdc-icon-size:18px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px;
     box-shadow:var(--ha-card-box-shadow,0 1px 2px rgba(0,0,0,.04));backdrop-filter:var(--ha-card-backdrop-filter,none);-webkit-backdrop-filter:var(--ha-card-backdrop-filter,none)}
@@ -216,12 +217,18 @@
     get _admin() { return !!(this._hass && this._hass.user && this._hass.user.is_admin); }
 
     connectedCallback() {
+      // Direktaufruf /heizplan?raum=<kürzel> (z. B. aus der Raumkarte) zeigt nur diesen Raum
+      this._onLocation = () => { if (!this._sheet) this._render(); };
+      window.addEventListener('location-changed', this._onLocation);
+      window.addEventListener('popstate', this._onLocation);
       this._tick = setInterval(() => { if (!this._sheet) this._render(); }, 60000);
       if (this._hass && !this._unsub) this._subscribe();
     }
 
     disconnectedCallback() {
       clearInterval(this._tick);
+      window.removeEventListener('location-changed', this._onLocation);
+      window.removeEventListener('popstate', this._onLocation);
       if (this._unsub) { this._unsub.then((u) => u()).catch(() => {}); this._unsub = null; }
     }
 
@@ -244,6 +251,10 @@
     _profile(id) { return this._profiles().find((p) => p.id === id); }
     _color(id) { const i = this._profiles().findIndex((p) => p.id === id); return i < 0 ? 'transparent' : PROFILE_COLORS[i % PROFILE_COLORS.length]; }
     _room(key) { return this._data && this._data.rooms.find((r) => r.key === key); }
+    _onlyRoom() {
+      const key = new URLSearchParams(window.location.search).get('raum');
+      return key && this._room(key) ? key : null;
+    }
     _todayKey() { return WEEK[(new Date().getDay() + 6) % 7]; }
 
     _roomState(room) {
@@ -266,12 +277,14 @@
       if (this._error) body += `<div class="warn">${esc(this._error)}</div>`;
       if (!this._data) {
         body += this._error ? '' : '<div class="hint">Lädt …</div>';
+      } else if (this._onlyRoom()) {
+        body += this._renderRooms(nowMin);
       } else {
         body += `<div class="seg-ctl"><button data-act="tab" data-tab="rooms" class="${this._tab === 'rooms' ? 'on' : ''}">Räume</button><button data-act="tab" data-tab="profiles" class="${this._tab === 'profiles' ? 'on' : ''}">Profile</button></div>`;
         body += this._tab === 'rooms' ? this._renderRooms(nowMin) : this._renderProfiles();
       }
       this.shadowRoot.innerHTML = `<style>${CSS}</style>
-        <div class="top"><button data-act="menu" title="Menü">${ic('menu')}</button><div class="t">Heizpläne</div></div>
+        <div class="top"><button data-act="menu" title="Menü">${ic('menu')}</button><div class="t">${this._data && this._onlyRoom() ? `Heizplan ${esc(this._room(this._onlyRoom()).name)}` : 'Heizpläne'}</div></div>
         <div class="wrap">${body}</div><div id="sheet"></div>`;
       this._renderSheet();
     }
@@ -287,8 +300,10 @@
     }
 
     _renderRooms(nowMin) {
-      const rooms = this._data.rooms;
+      const only = this._onlyRoom();
+      const rooms = only ? [this._room(only)] : this._data.rooms;
       let h = this._todayLine();
+      if (only) h += `<button class="all" data-act="all-rooms">${ic('chevron-left')}Alle Räume und Profile</button>`;
       if (!rooms.length) {
         h += `<div class="empty">${ic('home-thermometer-outline')}<b>Noch kein Raum</b>Leg einen Raum an und weise jedem Wochentag ein Profil zu.</div>`;
       }
@@ -325,7 +340,7 @@
           <div class="specials">${specials}</div>
         </div>`;
       }
-      if (this._admin) h += `<button class="btn add" data-act="room-new">${ic('plus')}Raum hinzufügen</button>`;
+      if (this._admin && !only) h += `<button class="btn add" data-act="room-new">${ic('plus')}Raum hinzufügen</button>`;
       h += '<div class="hint" style="margin-top:18px">Der Plan sagt, welche Temperatur gerade gelten soll. Fenster, Abwesenheit, Urlaub und Handeinstellungen am Thermostat regelt die Heizung zusätzlich.</div>';
       return h;
     }
@@ -504,6 +519,7 @@
         switch (act) {
           case 'menu': this.dispatchEvent(new Event('hass-toggle-menu', { bubbles: true, composed: true })); break;
           case 'tab': this._tab = el.dataset.tab; this._render(); break;
+          case 'all-rooms': history.replaceState(null, '', window.location.pathname); this._tab = 'rooms'; this._render(); break;
           case 'close': this._sheet = null; this._render(); break;
           case 'assign': this._sheet = { kind: 'assign', room: el.dataset.room, days: [el.dataset.day] }; this._renderSheet(); break;
           case 'toggle-day': {

@@ -4,6 +4,12 @@ Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0]
+
+### Hinzugefügt
+- Direktaufruf `/heizplan?raum=<kürzel>`: Das Panel zeigt nur diesen Raum, mit Rücksprung zu allen
+  Räumen und Profilen. So können Dashboards (z. B. die Raumkarte) direkt auf den Plan eines Raums verlinken.
+
 ## [0.1.0]
 
 ### Hinzugefügt
